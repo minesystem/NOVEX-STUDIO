@@ -1,0 +1,167 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#090611">
+<title>Roblox Connect | NØV3X STUDIO</title>
+
+<style>
+*{box-sizing:border-box}
+body{
+ margin:0;
+ background:#090611;
+ color:white;
+ font-family:Arial,sans-serif;
+ min-height:100vh;
+}
+header{
+ padding:20px;
+ border-bottom:1px solid #30213e;
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+}
+.logo{color:#bd83ff;font-weight:900;font-size:21px}
+main{
+ width:min(500px,92%);
+ margin:55px auto;
+ text-align:center;
+}
+.card{
+ background:#171020;
+ border:1px solid #39264d;
+ border-radius:20px;
+ padding:28px 22px;
+ box-shadow:0 10px 40px #0008;
+}
+.roblox-icon{
+ width:85px;height:85px;
+ margin:5px auto 20px;
+ background:#292035;
+ border-radius:22px;
+ display:grid;
+ place-items:center;
+ font-size:45px;
+}
+h1{font-size:27px;margin:10px 0}
+p{color:#ad9dbb;line-height:1.6}
+.status{
+ padding:13px;
+ margin:22px 0;
+ background:#241b30;
+ border-radius:10px;
+ color:#c9a5ff;
+ font-size:14px;
+}
+button{
+ width:100%;
+ border:0;
+ padding:16px;
+ margin-top:12px;
+ border-radius:11px;
+ background:#9147e8;
+ color:white;
+ font-weight:bold;
+ font-size:15px;
+ cursor:pointer;
+}
+button:disabled{opacity:.6}
+.secondary{background:#30233d}
+footer{
+ margin-top:25px;
+ color:#756783;
+ font-size:12px;
+}
+a{color:#c49aff;text-decoration:none}
+</style>
+</head>
+
+<body>
+
+<header>
+ <div class="logo">NØV3X STUDIO</div>
+ <a href="index.html">BACK TO EDITOR</a>
+</header>
+
+<main>
+ <div class="card">
+
+  <div class="roblox-icon">🎮</div>
+
+  <h1>ROBLOX CONNECTION</h1>
+
+  <p>
+   Connect your Roblox account to NØV3X STUDIO.
+   Account authorization will use Roblox's official
+   OAuth system.
+  </p>
+
+  <div class="status" id="status">
+   Checking backend connection...
+  </div>
+
+  <button id="connect" onclick="connectRoblox()">
+   CONNECT ROBLOX
+  </button>
+
+  <button class="secondary" onclick="checkBackend()">
+   CHECK CONNECTION
+  </button>
+
+  <footer>
+   Secure account authorization will be handled
+   through Roblox OAuth. Your Roblox password
+   will never be requested here.
+  </footer>
+
+ </div>
+
+ <footer>
+  NØV3X STUDIO ULTIMATE<br>
+  MOBILE CREATOR PLATFORM
+ </footer>
+</main>
+
+<script>
+const API =
+"https://jarvzrbhqzhbqbbuqgjk.supabase.co/functions/v1/roblox-auth";
+
+const statusBox = document.getElementById("status");
+const connectButton = document.getElementById("connect");
+
+async function checkBackend(){
+ statusBox.textContent = "Checking backend...";
+ connectButton.disabled = true;
+
+ try{
+  const response = await fetch(API + "/health");
+  const data = await response.json();
+
+  if(response.ok && data.success){
+   statusBox.textContent =
+    "Backend online. Roblox OAuth setup is still pending.";
+   connectButton.disabled = false;
+  }else{
+   throw new Error("Backend unavailable");
+  }
+ }catch(error){
+  statusBox.textContent =
+   "Backend connection failed. Check your Supabase deployment.";
+  connectButton.disabled = true;
+ }
+}
+
+async function connectRoblox(){
+ await checkBackend();
+
+ statusBox.textContent =
+  "Backend is ready. Official Roblox authorization has not been configured yet.";
+}
+
+checkBackend();
+</script>
+
+</body>
+</html>
