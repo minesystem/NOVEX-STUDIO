@@ -88,7 +88,6 @@ label{font-size:10px;color:#b9a4cc;display:block;margin-bottom:5px}
  <button class="tab" onclick="showTab('roblox',this)">ROBLOX</button>
 </div>
 
-<!-- BUILD -->
 <div class="page active" id="build">
  <div class="heading">CREATE OBJECTS</div>
  <div class="tools">
@@ -125,19 +124,16 @@ label{font-size:10px;color:#b9a4cc;display:block;margin-bottom:5px}
  </div>
 </div>
 
-<!-- EXPLORER -->
 <div class="page" id="explorer">
  <div class="heading">WORKSPACE — OBJECT HIERARCHY</div>
  <div id="objects"></div>
 </div>
 
-<!-- PROPERTIES -->
 <div class="page" id="properties">
  <div class="heading">OBJECT PROPERTIES</div>
  <div id="propertyEditor">Select an object first.</div>
 </div>
 
-<!-- TERRAIN -->
 <div class="page" id="terrain">
  <div class="heading">TERRAIN BUILDER</div>
  <div class="tools">
@@ -156,7 +152,6 @@ label{font-size:10px;color:#b9a4cc;display:block;margin-bottom:5px}
  <p style="font-size:11px;color:#a997b9">Terrain materials are prototype building pieces. More advanced terrain sculpting can be added later.</p>
 </div>
 
-<!-- SCRIPTS -->
 <div class="page" id="scripts">
  <div class="heading">LUAU SCRIPT EDITOR</div>
  <div class="field">
@@ -177,7 +172,6 @@ print("Hello from NOVEX STUDIO!")</textarea>
  <p style="font-size:10px;color:#ad9bbd">Scripts are edited and exported here. They are not executed as Roblox scripts inside this web editor.</p>
 </div>
 
-<!-- PROJECT -->
 <div class="page" id="project">
  <div class="heading">PROJECT SETTINGS</div>
  <div class="field">
@@ -196,7 +190,6 @@ print("Hello from NOVEX STUDIO!")</textarea>
  <p id="projectInfo" style="font-size:11px;color:#bdaaca"></p>
 </div>
 
-<!-- ROBLOX -->
 <div class="page" id="roblox">
  <div class="heading">ROBLOX CREATOR CONNECTION</div>
  <div style="background:#21172f;border-radius:10px;padding:13px;margin-bottom:12px">
@@ -801,8 +794,9 @@ function stopPlay(){
  notify('Playtest stopped');
 }
 
+/* UPDATED ROBLOX CONNECTION */
 function connectRoblox(){
- notify('Roblox OAuth backend is not configured yet.');
+ window.location.href = "roblox.html";
 }
 
 function robloxInfo(feature){
