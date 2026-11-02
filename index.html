@@ -4,76 +4,230 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>NOVEX STUDIO V1</title>
+<meta name="theme-color" content="#090611">
+<title>NØV3X STUDIO ULTIMATE</title>
+
 <style>
 *{box-sizing:border-box}
-body{margin:0;background:#090811;color:white;font-family:Arial,sans-serif;overflow:hidden}
-button{border:0;border-radius:9px;padding:12px;background:#252036;color:white;font-weight:bold}
-button:active{background:#9148ff}
-header{height:58px;background:#120e1d;border-bottom:1px solid #302440;display:flex;align-items:center;justify-content:space-between;padding:0 12px}
-.logo{font-weight:900;color:#bd83ff;font-size:19px}
-#status{font-size:11px;color:#9c91aa}
-#workspace{position:relative;width:100%;height:calc(100dvh - 58px - 170px)}
-#viewport{width:100%;height:100%;display:block}
-#toolbar{position:absolute;top:10px;left:10px;display:flex;gap:6px;flex-wrap:wrap}
-#toolbar button{padding:10px;font-size:12px}
-#bottom{height:170px;background:#120e1d;border-top:1px solid #302440;padding:10px;overflow-y:auto}
-.section{font-size:11px;color:#a99ab8;margin:3px 0 9px}
-.tools{display:flex;gap:7px;flex-wrap:wrap}
-.tools button{flex:1;min-width:65px;font-size:12px}
-#objects{margin-top:12px;display:flex;gap:6px;overflow-x:auto}
-.object{white-space:nowrap;background:#251d34;padding:8px 12px;border-radius:8px;font-size:12px}
-.active{background:#7941c8}
-#info{position:absolute;bottom:10px;left:10px;background:#171323dd;padding:8px;border-radius:7px;font-size:11px;color:#c6b4db}
-#menu{position:absolute;right:10px;top:10px;display:flex;gap:5px}
-#menu button{font-size:11px;padding:9px}
+body{margin:0;background:#090611;color:#fff;font-family:Arial,sans-serif;overflow:hidden}
+button,input,textarea,select{font:inherit}
+button{background:#251d35;color:white;border:1px solid #423354;border-radius:8px;padding:10px;font-weight:bold}
+button:active,.active{background:#8746d5}
+header{height:55px;background:#130e1d;border-bottom:1px solid #342443;display:flex;align-items:center;justify-content:space-between;padding:0 10px;gap:7px}
+.logo{font-weight:900;color:#c38aff;font-size:17px}
+header button{font-size:11px;padding:9px}
+#app{height:calc(100dvh - 55px);display:flex;flex-direction:column}
+#workspace{position:relative;flex:1;min-height:180px;background:#11101c}
+#viewport{width:100%;height:100%;display:block;touch-action:none}
+#topbar{position:absolute;top:8px;left:8px;right:8px;display:flex;gap:5px;flex-wrap:wrap;pointer-events:none}
+#topbar button{pointer-events:auto;font-size:10px;padding:9px}
+#sceneinfo{position:absolute;bottom:8px;left:8px;background:#130e1ddd;padding:8px;border-radius:7px;font-size:10px;color:#d2c0e6}
+#playBadge{position:absolute;right:10px;bottom:10px;color:#65eea0;font-size:11px;font-weight:bold}
+#panel{height:270px;max-height:43dvh;background:#130e1d;border-top:1px solid #3a2b49;display:flex;flex-direction:column}
+#tabs{display:flex;overflow-x:auto;flex-shrink:0;border-bottom:1px solid #382943}
+.tab{border:0;border-radius:0;background:transparent;padding:13px 15px;font-size:11px;white-space:nowrap}
+.tab.active{color:#d6b4ff;border-bottom:2px solid #b875ff;background:#241832}
+.page{display:none;padding:11px;overflow:auto;flex:1}
+.page.active{display:block}
+.heading{font-size:11px;color:#b99bcf;margin:2px 0 9px}
+.tools{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:13px}
+.tools button{flex:1;min-width:65px;font-size:11px}
+#objects{display:flex;flex-direction:column;gap:5px}
+.obj{display:flex;justify-content:space-between;align-items:center;text-align:left;width:100%;font-size:12px}
+.obj small{color:#bba8d0}
+input,textarea,select{background:#21192d;border:1px solid #55416c;border-radius:7px;color:white;padding:9px;width:100%}
+textarea{min-height:100px;resize:vertical;font-family:monospace;font-size:12px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+label{font-size:10px;color:#b9a4cc;display:block;margin-bottom:5px}
+.field{margin-bottom:9px}
+#notice{position:fixed;top:65px;left:50%;transform:translateX(-50%);background:#37244d;padding:10px 15px;border-radius:9px;font-size:12px;display:none;z-index:10;max-width:90%;text-align:center}
+#fileInput{display:none}
+@media(min-width:800px){
+ #app{flex-direction:row}
+ #workspace{height:100%;min-width:0}
+ #panel{height:100%;max-height:none;width:330px;flex-shrink:0;border-top:0;border-left:1px solid #3a2b49}
+}
 </style>
 </head>
+
 <body>
 
 <header>
  <div class="logo">NØV3X STUDIO</div>
- <div id="status">V1 • MOBILE CREATOR</div>
+ <small style="font-size:9px;color:#a997b9">ULTIMATE</small>
  <button onclick="saveProject()">SAVE</button>
+ <button onclick="exportProject()">EXPORT</button>
 </header>
+
+<div id="app">
 
 <div id="workspace">
  <canvas id="viewport"></canvas>
 
- <div id="toolbar">
-  <button onclick="addPart('Box')">＋ BLOCK</button>
-  <button onclick="addPart('Sphere')">＋ SPHERE</button>
-  <button onclick="addPart('Cylinder')">＋ CYLINDER</button>
+ <div id="topbar">
+  <button onclick="addObject('Block')">＋ BLOCK</button>
+  <button onclick="addObject('Sphere')">＋ SPHERE</button>
+  <button onclick="addObject('Cylinder')">＋ CYLINDER</button>
+  <button onclick="addObject('Tree')">＋ TREE</button>
+  <button onclick="addObject('Terrain')">＋ TERRAIN</button>
  </div>
 
- <div id="menu">
-  <button onclick="resetCamera()">RESET VIEW</button>
- </div>
-
- <div id="info">Drag to rotate • Pinch to zoom • Tap an object to select</div>
+ <div id="sceneinfo">Drag to rotate • Pinch to zoom • Tap objects to select</div>
+ <div id="playBadge"></div>
 </div>
 
-<div id="bottom">
- <div class="section">BUILDING TOOLS</div>
+<div id="panel">
+
+<div id="tabs">
+ <button class="tab active" onclick="showTab('build',this)">BUILD</button>
+ <button class="tab" onclick="showTab('explorer',this)">EXPLORER</button>
+ <button class="tab" onclick="showTab('properties',this)">PROPERTIES</button>
+ <button class="tab" onclick="showTab('terrain',this)">TERRAIN</button>
+ <button class="tab" onclick="showTab('scripts',this)">SCRIPTS</button>
+ <button class="tab" onclick="showTab('project',this)">PROJECT</button>
+ <button class="tab" onclick="showTab('roblox',this)">ROBLOX</button>
+</div>
+
+<!-- BUILD -->
+<div class="page active" id="build">
+ <div class="heading">CREATE OBJECTS</div>
  <div class="tools">
-  <button onclick="addPart('Box')">BLOCK</button>
-  <button onclick="addPart('Sphere')">SPHERE</button>
-  <button onclick="addPart('Cylinder')">CYLINDER</button>
-  <button onclick="deleteSelected()">DELETE</button>
-  <button onclick="changeColor()">COLOR</button>
+  <button onclick="addObject('Block')">BLOCK</button>
+  <button onclick="addObject('Sphere')">SPHERE</button>
+  <button onclick="addObject('Cylinder')">CYLINDER</button>
+  <button onclick="addObject('Tree')">TREE</button>
+  <button onclick="addObject('Terrain')">GROUND</button>
  </div>
 
- <div class="section" style="margin-top:13px">EXPLORER — OBJECTS</div>
- <div id="objects">
-  <span class="object">Workspace</span>
+ <div class="heading">TRANSFORM</div>
+ <div class="tools">
+  <button id="moveMode" class="active" onclick="setMode('move')">MOVE</button>
+  <button id="rotateMode" onclick="setMode('rotate')">ROTATE</button>
+  <button id="scaleMode" onclick="setMode('scale')">RESIZE</button>
+ </div>
+
+ <div class="heading">SELECTED OBJECT</div>
+ <div class="tools">
+  <button onclick="duplicateObject()">DUPLICATE</button>
+  <button onclick="deleteObject()">DELETE</button>
+  <button onclick="changeColor()">COLOR</button>
+  <button onclick="undo()">UNDO</button>
+  <button onclick="redo()">REDO</button>
+ </div>
+ <div class="heading">MOVEMENT CONTROLS</div>
+ <div class="tools">
+  <button onclick="adjust('x',-1)">X −</button>
+  <button onclick="adjust('x',1)">X +</button>
+  <button onclick="adjust('y',-1)">Y −</button>
+  <button onclick="adjust('y',1)">Y +</button>
+  <button onclick="adjust('z',-1)">Z −</button>
+  <button onclick="adjust('z',1)">Z +</button>
  </div>
 </div>
+
+<!-- EXPLORER -->
+<div class="page" id="explorer">
+ <div class="heading">WORKSPACE — OBJECT HIERARCHY</div>
+ <div id="objects"></div>
+</div>
+
+<!-- PROPERTIES -->
+<div class="page" id="properties">
+ <div class="heading">OBJECT PROPERTIES</div>
+ <div id="propertyEditor">Select an object first.</div>
+</div>
+
+<!-- TERRAIN -->
+<div class="page" id="terrain">
+ <div class="heading">TERRAIN BUILDER</div>
+ <div class="tools">
+  <button onclick="addObject('Terrain')">GRASS</button>
+  <button onclick="addTerrain('water')">WATER</button>
+  <button onclick="addTerrain('stone')">STONE</button>
+  <button onclick="addTerrain('sand')">SAND</button>
+  <button onclick="addObject('Tree')">TREE</button>
+ </div>
+ <div class="heading">MAP TOOLS</div>
+ <div class="tools">
+  <button onclick="addObject('Block')">ADD PLATFORM</button>
+  <button onclick="resetCamera()">RESET CAMERA</button>
+  <button onclick="clearScene()">CLEAR MAP</button>
+ </div>
+ <p style="font-size:11px;color:#a997b9">Terrain materials are prototype building pieces. More advanced terrain sculpting can be added later.</p>
+</div>
+
+<!-- SCRIPTS -->
+<div class="page" id="scripts">
+ <div class="heading">LUAU SCRIPT EDITOR</div>
+ <div class="field">
+  <label>Script name</label>
+  <input id="scriptName" value="Script1">
+ </div>
+ <div class="field">
+  <label>Script source</label>
+  <textarea id="scriptCode" spellcheck="false">-- NØV3X STUDIO
+-- Your Roblox Luau script
+
+print("Hello from NOVEX STUDIO!")</textarea>
+ </div>
+ <div class="tools">
+  <button onclick="saveScript()">SAVE SCRIPT</button>
+  <button onclick="downloadScript()">DOWNLOAD .LUA</button>
+ </div>
+ <p style="font-size:10px;color:#ad9bbd">Scripts are edited and exported here. They are not executed as Roblox scripts inside this web editor.</p>
+</div>
+
+<!-- PROJECT -->
+<div class="page" id="project">
+ <div class="heading">PROJECT SETTINGS</div>
+ <div class="field">
+  <label>Project name</label>
+  <input id="projectName" value="My NOVEX Game">
+ </div>
+ <div class="tools">
+  <button onclick="saveProject()">SAVE PROJECT</button>
+  <button onclick="exportProject()">EXPORT JSON</button>
+  <button onclick="document.getElementById('fileInput').click()">IMPORT JSON</button>
+  <button onclick="startPlay()">PLAY TEST</button>
+  <button onclick="stopPlay()">STOP TEST</button>
+ </div>
+ <input id="fileInput" type="file" accept=".json,application/json" onchange="importProject(event)">
+ <div class="heading">PROJECT INFORMATION</div>
+ <p id="projectInfo" style="font-size:11px;color:#bdaaca"></p>
+</div>
+
+<!-- ROBLOX -->
+<div class="page" id="roblox">
+ <div class="heading">ROBLOX CREATOR CONNECTION</div>
+ <div style="background:#21172f;border-radius:10px;padding:13px;margin-bottom:12px">
+  <b style="color:#c38aff">ROBLOX INTEGRATION</b>
+  <p style="font-size:11px;color:#c1b1ce;line-height:1.6">
+   Connect your Roblox creator account through a secure OAuth backend.
+  </p>
+  <button onclick="connectRoblox()">CONNECT ROBLOX</button>
+ </div>
+ <div class="heading">CREATOR FEATURES</div>
+ <div class="tools">
+  <button onclick="robloxInfo('Account management')">ACCOUNT</button>
+  <button onclick="robloxInfo('Experience management')">EXPERIENCES</button>
+  <button onclick="robloxInfo('Publishing')">PUBLISH</button>
+  <button onclick="robloxInfo('Playtester management')">TESTERS</button>
+ </div>
+ <p style="font-size:10px;color:#ad9bbd;line-height:1.6">
+  These integrations require a configured backend, Roblox OAuth credentials and authorized Open Cloud API access. This prototype does not claim to be connected to Roblox yet.
+ </p>
+</div>
+
+</div>
+</div>
+
+<div id="notice"></div>
 
 <script type="module">
 import * as THREE from
 'https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js';
 
-import { OrbitControls } from
+import {OrbitControls} from
 'https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/controls/OrbitControls.js';
 
 const canvas=document.getElementById('viewport');
@@ -81,13 +235,11 @@ const canvas=document.getElementById('viewport');
 const scene=new THREE.Scene();
 scene.background=new THREE.Color(0x11101c);
 
-const camera=new THREE.PerspectiveCamera(
- 65,canvas.clientWidth/canvas.clientHeight,0.1,1000
-);
-camera.position.set(8,8,12);
+const camera=new THREE.PerspectiveCamera(65,1,.1,1000);
+camera.position.set(9,9,13);
 
 const renderer=new THREE.WebGLRenderer({
- canvas,antialias:true,alpha:false
+ canvas,antialias:true
 });
 renderer.setPixelRatio(Math.min(devicePixelRatio,2));
 
@@ -98,81 +250,154 @@ controls.target.set(0,0,0);
 scene.add(new THREE.HemisphereLight(0xffffff,0x403050,2));
 
 const light=new THREE.DirectionalLight(0xffffff,2);
-light.position.set(5,10,5);
+light.position.set(6,12,8);
 scene.add(light);
 
-// Building grid
-const grid=new THREE.GridHelper(40,40,0x8650d8,0x393044);
+const grid=new THREE.GridHelper(60,60,0x8650d8,0x393044);
 scene.add(grid);
 
-// Ground
 const ground=new THREE.Mesh(
- new THREE.PlaneGeometry(40,40),
- new THREE.MeshStandardMaterial({
-  color:0x171421,
-  roughness:1
- })
+ new THREE.PlaneGeometry(60,60),
+ new THREE.MeshStandardMaterial({color:0x171421})
 );
 ground.rotation.x=-Math.PI/2;
-ground.position.y=-0.03;
+ground.position.y=-.05;
 scene.add(ground);
 
 let objects=[];
 let selected=null;
+let mode='move';
 let colorIndex=0;
+let history=[];
+let historyIndex=-1;
+let restoring=false;
+let playing=false;
+let savedPositions=[];
 
 const colors=[
- 0x9d5cff,
- 0x00d9ff,
- 0xff4f9a,
- 0x45dc85,
- 0xffb347,
- 0xffffff
+ 0x9d5cff,0x00d9ff,0xff4f9a,0x45dc85,
+ 0xffb347,0xffffff,0xff4444,0x84552e
 ];
 
-function addPart(type){
- let geometry;
+function notify(message){
+ const el=document.getElementById('notice');
+ el.textContent=message;
+ el.style.display='block';
+ clearTimeout(notify.timer);
+ notify.timer=setTimeout(()=>el.style.display='none',2400);
+}
 
- if(type==='Box')
-  geometry=new THREE.BoxGeometry(2,2,2);
+function showTab(name,button){
+ document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+ document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+ document.getElementById(name).classList.add('active');
+ button.classList.add('active');
+}
 
- if(type==='Sphere')
-  geometry=new THREE.SphereGeometry(1,32,24);
+function makeGeometry(type){
+ if(type==='Sphere')return new THREE.SphereGeometry(1,32,24);
+ if(type==='Cylinder')return new THREE.CylinderGeometry(1,1,2,32);
+ return new THREE.BoxGeometry(2,2,2);
+}
 
- if(type==='Cylinder')
-  geometry=new THREE.CylinderGeometry(1,1,2,32);
+function makeTree(){
+ const group=new THREE.Group();
 
- const material=new THREE.MeshStandardMaterial({
-  color:colors[colorIndex],
-  roughness:0.65
- });
+ const trunk=new THREE.Mesh(
+  new THREE.CylinderGeometry(.2,.3,2,12),
+  new THREE.MeshStandardMaterial({color:0x80512b})
+ );
+ trunk.position.y=1;
+ group.add(trunk);
 
- const mesh=new THREE.Mesh(geometry,material);
+ const leaves=new THREE.Mesh(
+  new THREE.SphereGeometry(1.1,16,12),
+  new THREE.MeshStandardMaterial({color:0x32a852})
+ );
+ leaves.position.y=2.5;
+ group.add(leaves);
 
- mesh.position.set(
-  Math.round(Math.random()*6-3),
-  1,
-  Math.round(Math.random()*6-3)
+ return group;
+}
+
+function addObject(type){
+ let obj;
+
+ if(type==='Tree'){
+  obj=makeTree();
+ }else{
+  const material=new THREE.MeshStandardMaterial({
+   color:type==='Terrain'?0x4c9b48:colors[colorIndex],
+   roughness:.8
+  });
+
+  obj=new THREE.Mesh(makeGeometry(type),material);
+
+  if(type==='Terrain'){
+   obj.scale.set(3,.2,3);
+   obj.position.y=0;
+  }else{
+   obj.position.y=1;
+  }
+ }
+
+ obj.position.x=Math.round(Math.random()*4-2);
+ obj.position.z=Math.round(Math.random()*4-2);
+
+ obj.userData.type=type;
+ obj.userData.name=type+' '+(objects.length+1);
+
+ scene.add(obj);
+ objects.push(obj);
+ selectObject(obj);
+ snapshot();
+ notify(type+' added');
+}
+
+function addTerrain(type){
+ const palette={
+  water:0x2699dc,
+  stone:0x858585,
+  sand:0xd9bb78
+ };
+
+ const obj=new THREE.Mesh(
+  new THREE.BoxGeometry(3,.25,3),
+  new THREE.MeshStandardMaterial({
+   color:palette[type],
+   roughness:.9
+  })
  );
 
- mesh.userData.name=type+' '+(objects.length+1);
+ obj.position.set(
+  Math.round(Math.random()*8-4),
+  .1,
+  Math.round(Math.random()*8-4)
+ );
 
- scene.add(mesh);
- objects.push(mesh);
- selectObject(mesh);
- updateExplorer();
+ obj.userData.type=type;
+ obj.userData.name=type+' '+(objects.length+1);
+
+ scene.add(obj);
+ objects.push(obj);
+ selectObject(obj);
+ snapshot();
+ notify(type+' terrain added');
 }
 
 function selectObject(obj){
  selected=obj;
 
  objects.forEach(o=>{
-  o.material.emissive.setHex(
-   o===selected?0x302040:0x000000
-  );
+  o.traverse(child=>{
+   if(child.isMesh && child.material.emissive){
+    child.material.emissive.setHex(o===selected?0x302040:0x000000);
+   }
+  });
  });
 
  updateExplorer();
+ updateProperties();
 }
 
 function updateExplorer(){
@@ -180,142 +405,553 @@ function updateExplorer(){
  list.innerHTML='';
 
  objects.forEach(obj=>{
-  const item=document.createElement('button');
-  item.className='object'+(obj===selected?' active':'');
-  item.textContent=obj.userData.name;
-
-  item.onclick=()=>selectObject(obj);
-
-  list.appendChild(item);
+  const b=document.createElement('button');
+  b.className='obj'+(obj===selected?' active':'');
+  b.innerHTML='<span>'+obj.userData.name+'</span><small>3D OBJECT</small>';
+  b.onclick=()=>selectObject(obj);
+  list.appendChild(b);
  });
 }
 
-function deleteSelected(){
- if(!selected)return;
+function updateProperties(){
+ const p=document.getElementById('propertyEditor');
+
+ if(!selected){
+  p.textContent='Select an object first.';
+  return;
+ }
+
+ p.innerHTML='';
+
+ const fields=[
+  ['Position X','position','x'],
+  ['Position Y','position','y'],
+  ['Position Z','position','z'],
+  ['Rotation X','rotation','x'],
+  ['Rotation Y','rotation','y'],
+  ['Rotation Z','rotation','z'],
+  ['Size X','scale','x'],
+  ['Size Y','scale','y'],
+  ['Size Z','scale','z']
+ ];
+
+ const grid=document.createElement('div');
+ grid.className='grid2';
+
+ fields.forEach(([title,group,axis])=>{
+  const wrapper=document.createElement('div');
+  wrapper.className='field';
+
+  const label=document.createElement('label');
+  label.textContent=title;
+
+  const input=document.createElement('input');
+  input.type='number';
+  input.step='.25';
+  input.value=Number(selected[group][axis].toFixed(2));
+
+  input.onchange=()=>{
+   if(!selected)return;
+   selected[group][axis]=Number(input.value)||0;
+   if(group==='scale')selected[group][axis]=Math.max(.05,selected[group][axis]);
+   snapshot();
+  };
+
+  wrapper.append(label,input);
+  grid.appendChild(wrapper);
+ });
+
+ p.appendChild(grid);
+
+ const colorButton=document.createElement('button');
+ colorButton.textContent='CHANGE COLOR';
+ colorButton.onclick=changeColor;
+ p.appendChild(colorButton);
+}
+
+function snapshot(){
+ if(restoring)return;
+
+ const state=objects.map(o=>({
+  type:o.userData.type,
+  name:o.userData.name,
+  position:o.position.toArray(),
+  rotation:o.rotation.toArray(),
+  scale:o.scale.toArray(),
+  color:getObjectColor(o)
+ }));
+
+ history=history.slice(0,historyIndex+1);
+ history.push(JSON.stringify(state));
+
+ if(history.length>40)history.shift();
+ historyIndex=history.length-1;
+ updateProjectInfo();
+}
+
+function getObjectColor(obj){
+ let color=0x9d5cff;
+ obj.traverse(c=>{
+  if(c.isMesh && c.material.color)color=c.material.color.getHex();
+ });
+ return color;
+}
+
+function restore(index){
+ if(index<0||index>=history.length)return;
+
+ restoring=true;
+ objects.forEach(o=>scene.remove(o));
+ objects=[];
+
+ const data=JSON.parse(history[index]);
+
+ data.forEach(d=>{
+  let obj;
+
+  if(d.type==='Tree'){
+   obj=makeTree();
+  }else{
+   obj=new THREE.Mesh(
+    makeGeometry(d.type),
+    new THREE.MeshStandardMaterial({color:d.color})
+   );
+  }
+
+  if(d.type==='Terrain'){
+   obj.scale.fromArray(d.scale);
+  }
+
+  obj.position.fromArray(d.position);
+  obj.rotation.fromArray(d.rotation);
+  obj.scale.fromArray(d.scale);
+  obj.userData.type=d.type;
+  obj.userData.name=d.name;
+
+  scene.add(obj);
+  objects.push(obj);
+ });
+
+ selected=null;
+ historyIndex=index;
+ restoring=false;
+
+ updateExplorer();
+ updateProperties();
+ updateProjectInfo();
+}
+
+function undo(){restore(historyIndex-1)}
+function redo(){restore(historyIndex+1)}
+
+function setMode(value){
+ mode=value;
+
+ ['move','rotate','scale'].forEach(m=>{
+  document.getElementById(
+   m==='move'?'moveMode':m==='rotate'?'rotateMode':'scaleMode'
+  ).classList.toggle('active',m===value);
+ });
+
+ notify(value.toUpperCase()+' mode selected');
+}
+
+function adjust(axis,direction){
+ if(!selected)return notify('Select an object first');
+
+ if(mode==='move'){
+  selected.position[axis]+=direction*.5;
+ }else if(mode==='rotate'){
+  selected.rotation[axis]+=direction*Math.PI/12;
+ }else{
+  selected.scale[axis]=Math.max(.1,selected.scale[axis]+direction*.25);
+ }
+
+ updateProperties();
+ snapshot();
+}
+
+function duplicateObject(){
+ if(!selected)return notify('Select an object first');
+
+ let copy;
+
+ if(selected.userData.type==='Tree'){
+  copy=makeTree();
+ }else{
+  copy=new THREE.Mesh(
+   makeGeometry(selected.userData.type),
+   selected.material.clone()
+  );
+ }
+
+ copy.position.copy(selected.position);
+ copy.position.x+=2;
+ copy.rotation.copy(selected.rotation);
+ copy.scale.copy(selected.scale);
+
+ copy.userData.type=selected.userData.type;
+ copy.userData.name=selected.userData.type+' '+(objects.length+1);
+
+ scene.add(copy);
+ objects.push(copy);
+ selectObject(copy);
+ snapshot();
+}
+
+function deleteObject(){
+ if(!selected)return notify('Select an object first');
 
  scene.remove(selected);
  objects=objects.filter(o=>o!==selected);
  selected=null;
+
  updateExplorer();
+ updateProperties();
+ snapshot();
 }
 
 function changeColor(){
- if(!selected){
-  alert('Select an object first!');
-  return;
- }
+ if(!selected)return notify('Select an object first');
 
  colorIndex=(colorIndex+1)%colors.length;
- selected.material.color.setHex(colors[colorIndex]);
+
+ selected.traverse(c=>{
+  if(c.isMesh && c.material.color){
+   c.material.color.setHex(colors[colorIndex]);
+  }
+ });
+
+ snapshot();
+}
+
+function clearScene(){
+ if(!confirm('Delete all objects in this project?'))return;
+
+ objects.forEach(o=>scene.remove(o));
+ objects=[];
+ selected=null;
+
+ updateExplorer();
+ updateProperties();
+ snapshot();
 }
 
 function resetCamera(){
- camera.position.set(8,8,12);
+ camera.position.set(9,9,13);
  controls.target.set(0,0,0);
  controls.update();
 }
 
-// Tap objects to select
-const raycaster=new THREE.Raycaster();
-const pointer=new THREE.Vector2();
+function projectData(){
+ return {
+  name:document.getElementById('projectName').value,
+  version:'ULTIMATE',
+  objects:objects.map(o=>({
+   type:o.userData.type,
+   name:o.userData.name,
+   position:o.position.toArray(),
+   rotation:o.rotation.toArray(),
+   scale:o.scale.toArray(),
+   color:getObjectColor(o)
+  })),
+  script:{
+   name:document.getElementById('scriptName').value,
+   code:document.getElementById('scriptCode').value
+  }
+ };
+}
 
-renderer.domElement.addEventListener('pointerdown',e=>{
- const rect=canvas.getBoundingClientRect();
-
- pointer.x=((e.clientX-rect.left)/rect.width)*2-1;
- pointer.y=-((e.clientY-rect.top)/rect.height)*2+1;
-
- raycaster.setFromCamera(pointer,camera);
-
- const hits=raycaster.intersectObjects(objects);
-
- if(hits.length){
-  selectObject(hits[0].object);
+function saveProject(){
+ try{
+  localStorage.setItem('novex_ultimate_project',JSON.stringify(projectData()));
+  notify('Project saved on this device!');
+ }catch(e){
+  notify('Save failed. Device storage may be full.');
  }
+}
+
+function exportProject(){
+ const blob=new Blob([JSON.stringify(projectData(),null,2)],{
+  type:'application/json'
+ });
+
+ downloadBlob(blob,'novex-project.json');
+ notify('Project exported');
+}
+
+function downloadBlob(blob,name){
+ const url=URL.createObjectURL(blob);
+ const a=document.createElement('a');
+ a.href=url;
+ a.download=name;
+ a.click();
+ setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+
+function importProject(event){
+ const file=event.target.files[0];
+ if(!file)return;
+
+ const reader=new FileReader();
+
+ reader.onload=()=>{
+  try{
+   const data=JSON.parse(reader.result);
+
+   if(!Array.isArray(data.objects))throw Error('Invalid project');
+
+   objects.forEach(o=>scene.remove(o));
+   objects=[];
+   selected=null;
+
+   document.getElementById('projectName').value=data.name||'Imported Project';
+
+   if(data.script){
+    document.getElementById('scriptName').value=data.script.name||'Script1';
+    document.getElementById('scriptCode').value=data.script.code||'';
+   }
+
+   data.objects.forEach(d=>{
+    let obj;
+
+    if(d.type==='Tree'){
+     obj=makeTree();
+    }else{
+     obj=new THREE.Mesh(
+      makeGeometry(d.type),
+      new THREE.MeshStandardMaterial({color:d.color||0x9d5cff})
+     );
+    }
+
+    obj.position.fromArray(d.position||[0,1,0]);
+    obj.rotation.fromArray(d.rotation||[0,0,0]);
+    obj.scale.fromArray(d.scale||[1,1,1]);
+
+    obj.userData.type=d.type;
+    obj.userData.name=d.name||d.type;
+
+    scene.add(obj);
+    objects.push(obj);
+   });
+
+   history=[];
+   historyIndex=-1;
+   snapshot();
+   updateExplorer();
+   updateProperties();
+
+   notify('Project imported!');
+  }catch(e){
+   notify('Invalid project file');
+  }
+
+  event.target.value='';
+ };
+
+ reader.readAsText(file);
+}
+
+function saveScript(){
+ try{
+  localStorage.setItem('novex_script',JSON.stringify({
+   name:document.getElementById('scriptName').value,
+   code:document.getElementById('scriptCode').value
+  }));
+  notify('Script saved!');
+ }catch(e){
+  notify('Could not save script');
+ }
+}
+
+function downloadScript(){
+ const name=document.getElementById('scriptName').value||'Script';
+ const code=document.getElementById('scriptCode').value;
+
+ downloadBlob(new Blob([code],{type:'text/plain'}),name+'.lua');
+}
+
+function startPlay(){
+ if(playing)return;
+
+ playing=true;
+ savedPositions=objects.map(o=>({
+  obj:o,
+  position:o.position.clone()
+ }));
+
+ document.getElementById('playBadge').textContent='● PLAYTEST ACTIVE';
+ controls.enabled=false;
+ notify('Playtest started');
+}
+
+function stopPlay(){
+ if(!playing)return;
+
+ savedPositions.forEach(item=>{
+  if(objects.includes(item.obj)){
+   item.obj.position.copy(item.position);
+  }
+ });
+
+ playing=false;
+ controls.enabled=true;
+ document.getElementById('playBadge').textContent='';
+
+ notify('Playtest stopped');
+}
+
+function connectRoblox(){
+ notify('Roblox OAuth backend is not configured yet.');
+}
+
+function robloxInfo(feature){
+ notify(feature+' requires secure Roblox API integration.');
+}
+
+function updateProjectInfo(){
+ document.getElementById('projectInfo').textContent=
+  'Objects: '+objects.length+
+  ' | Version: Ultimate | Saved locally on this device';
+}
+
+function loadProject(){
+ try{
+  const raw=localStorage.getItem('novex_ultimate_project');
+
+  if(raw){
+   const data=JSON.parse(raw);
+
+   document.getElementById('projectName').value=data.name||'My NOVEX Game';
+
+   if(data.script){
+    document.getElementById('scriptName').value=data.script.name||'Script1';
+    document.getElementById('scriptCode').value=data.script.code||'';
+   }
+
+   data.objects.forEach(d=>{
+    let obj=d.type==='Tree'?makeTree():new THREE.Mesh(
+     makeGeometry(d.type),
+     new THREE.MeshStandardMaterial({color:d.color||0x9d5cff})
+    );
+
+    obj.position.fromArray(d.position);
+    obj.rotation.fromArray(d.rotation);
+    obj.scale.fromArray(d.scale);
+    obj.userData.type=d.type;
+    obj.userData.name=d.name;
+
+    scene.add(obj);
+    objects.push(obj);
+   });
+  }
+
+  const script=localStorage.getItem('novex_script');
+  if(script){
+   const d=JSON.parse(script);
+   document.getElementById('scriptName').value=d.name||'Script1';
+   document.getElementById('scriptCode').value=d.code||'';
+  }
+ }catch(e){
+  console.log('Loading error',e);
+ }
+
+ updateExplorer();
+ updateProperties();
+ updateProjectInfo();
+}
+
+let down=null;
+
+canvas.addEventListener('pointerdown',e=>{
+ down={x:e.clientX,y:e.clientY};
+});
+
+canvas.addEventListener('pointerup',e=>{
+ if(!down)return;
+
+ const distance=Math.hypot(e.clientX-down.x,e.clientY-down.y);
+
+ if(distance<8){
+  const rect=canvas.getBoundingClientRect();
+
+  const pointer=new THREE.Vector2(
+   ((e.clientX-rect.left)/rect.width)*2-1,
+   -((e.clientY-rect.top)/rect.height)*2+1
+  );
+
+  const ray=new THREE.Raycaster();
+  ray.setFromCamera(pointer,camera);
+
+  const hits=ray.intersectObjects(objects,true);
+
+  if(hits.length){
+   let obj=hits[0].object;
+
+   while(obj.parent!==scene && obj.parent){
+    obj=obj.parent;
+   }
+
+   if(objects.includes(obj))selectObject(obj);
+  }
+ }
+
+ down=null;
 });
 
 function resize(){
  const w=canvas.clientWidth;
  const h=canvas.clientHeight;
 
+ if(!w||!h)return;
+
  camera.aspect=w/h;
  camera.updateProjectionMatrix();
-
  renderer.setSize(w,h,false);
 }
 
 window.addEventListener('resize',resize);
-resize();
+new ResizeObserver(resize).observe(document.getElementById('workspace'));
 
-// Save project
-function saveProject(){
- const data={
-  name:'NOVEX STUDIO PROJECT',
-  version:1,
-  objects:objects.map(o=>({
-   type:o.geometry.type,
-   name:o.userData.name,
-   position:o.position.toArray(),
-   rotation:o.rotation.toArray(),
-   scale:o.scale.toArray(),
-   color:o.material.color.getHex()
-  }))
- };
-
- localStorage.setItem('novex_project',JSON.stringify(data));
-
- alert('Project saved on this device!');
-}
-
-window.saveProject=saveProject;
-window.addPart=addPart;
-window.deleteSelected=deleteSelected;
+window.showTab=showTab;
+window.addObject=addObject;
+window.addTerrain=addTerrain;
+window.setMode=setMode;
+window.adjust=adjust;
+window.duplicateObject=duplicateObject;
+window.deleteObject=deleteObject;
 window.changeColor=changeColor;
+window.undo=undo;
+window.redo=redo;
+window.clearScene=clearScene;
 window.resetCamera=resetCamera;
+window.saveProject=saveProject;
+window.exportProject=exportProject;
+window.importProject=importProject;
+window.saveScript=saveScript;
+window.downloadScript=downloadScript;
+window.startPlay=startPlay;
+window.stopPlay=stopPlay;
+window.connectRoblox=connectRoblox;
+window.robloxInfo=robloxInfo;
+
+loadProject();
+snapshot();
 
 function animate(){
  requestAnimationFrame(animate);
+
+ if(playing){
+  objects.forEach(o=>{
+   o.rotation.y+=.003;
+  });
+ }
+
  controls.update();
  renderer.render(scene,camera);
 }
+
 animate();
-
-// Load previous project
-const saved=localStorage.getItem('novex_project');
-
-if(saved){
- try{
-  const data=JSON.parse(saved);
-
-  data.objects.forEach(o=>{
-   let type=o.type==='SphereGeometry'?'Sphere':
-    o.type==='CylinderGeometry'?'Cylinder':'Box';
-
-   let geometry=type==='Sphere'
-    ?new THREE.SphereGeometry(1,32,24):
-    type==='Cylinder'
-    ?new THREE.CylinderGeometry(1,1,2,32):
-    new THREE.BoxGeometry(2,2,2);
-
-   const mesh=new THREE.Mesh(
-    geometry,
-    new THREE.MeshStandardMaterial({color:o.color})
-   );
-
-   mesh.position.fromArray(o.position);
-   mesh.rotation.fromArray(o.rotation);
-   mesh.scale.fromArray(o.scale);
-   mesh.userData.name=o.name;
-
-   scene.add(mesh);
-   objects.push(mesh);
-  });
-
-  updateExplorer();
- }catch(e){
-  console.log('Could not load saved project',e);
- }
-}
 </script>
 </body>
 </html>
